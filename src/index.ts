@@ -1,21 +1,33 @@
 import express, { Request, Response } from 'express';
-import { Mimic } from './mimic';
+import { Mimic, Route } from './mimic';
+import Cache from './cache';
 
 const app = express();
 const mimic = new Mimic(`/app/mocks`);
+const cache = new Cache();
+
+const getMockData = async (route: Route): Promise<string> => {
+
+  let mock = cache.get(route.path);
+  if (!mock) {
+    mock = (await route.handler()).toString();
+    cache.set(route.path, mock);
+  }
+  return mock;
+};
 
 (async () => {
 
   const routes = await mimic.getMockedRoutes();
-  routes.map(({ method, path, handler }) => {
+  routes.map((route: Route) => {
 
-    app[method](path, async (req: Request, res: Response) => {
+    app[route.method](route.path, async (req: Request, res: Response) => {
 
-      const mock = await handler();
-      res.json(JSON.parse(mock.toString()));
+      const mock = await getMockData(route);
+      res.json(JSON.parse(mock));
     });
 
-    console.log(`Route ${method.toUpperCase()} '${path}' was set`);
+    console.log(`Route ${route.method.toUpperCase()} '${route.path}' was set`);
   });
 
   app.get('/', (req: Request, res: Response) => {
