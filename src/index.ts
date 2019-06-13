@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express';
+
+import config from './config';
 import { Mimic, Route } from './lib/mimic';
 import Cache from './lib/cache';
 
 const app = express();
-const mimic = new Mimic(`/app/mocks`);
+const mimic = new Mimic(config.MOCKS_PATH);
 const cache = new Cache();
 
 const getMockData = async (route: Route): Promise<string> => {
@@ -34,7 +36,7 @@ const getMockData = async (route: Route): Promise<string> => {
     res.send('Hello, World');
   });
 
-  app.listen(8080, () => {
-    console.log('Server started and listening :8080');
+  app.listen(config.API_PORT, () => {
+    console.log(`Server started and listening :${config.API_PORT}`);
   });
 })();
