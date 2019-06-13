@@ -52,7 +52,7 @@ export class Mimic {
 
       fs.readdir(this.mockPath, (err: Error | null, files: string[]) => {
 
-        const filtered = files.filter((file: string) => file != '.gitkeep');
+        const filtered = files.filter((file: string) => file.endsWith('.json'));
         return err != null ? reject(err) : resolve(filtered);
       });
     });
