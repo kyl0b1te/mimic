@@ -1,0 +1,29 @@
+{
+  "name": "mimic",
+  "version": "0.1.0",
+  "description": "http request mocker",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist/* && tsc",
+    "start": "node dist/index",
+    "lint": "eslint src/ --ext .ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhikiri/mimic.git"
+  },
+  "author": "zhikiri <zhikiri.dev@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zhikiri/mimic/issues"
+  },
+  "homepage": "https://github.com/zhikiri/mimic#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/node": "^12.0.8"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
