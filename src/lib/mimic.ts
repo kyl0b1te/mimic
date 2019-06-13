@@ -17,10 +17,10 @@ export class Mimic {
   public async getMockedRoutes(): Promise<Route[]> {
 
     const files = await this.getMockFiles();
-    return files.map((filePath: string) => this.getRoute(filePath));
+    return files.map((file: string) => this.getRouteByFilePath(file));
   }
 
-  private getRoute(filePath: string): Route {
+  private getRouteByFilePath(filePath: string): Route {
 
     const source = filePath.split('.');
     source.pop();
