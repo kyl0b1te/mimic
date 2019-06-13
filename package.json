@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -rf dist/* && tsc",
-    "start": "node dist/index",
+    "start": "nodemon --watch /mimic/mocks --ignore '/mimic/mocks/*.log' dist/index.js",
     "lint": "eslint src/ --ext .ts"
   },
   "repository": {
@@ -24,6 +24,7 @@
     "@types/node": "^12.0.8"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "nodemon": "^1.19.1"
   }
 }
