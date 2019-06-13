@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
-import { Mimic, Route } from './mimic';
-import Cache from './cache';
+import { Mimic, Route } from './lib/mimic';
+import Cache from './lib/cache';
 
 const app = express();
 const mimic = new Mimic(`/app/mocks`);
