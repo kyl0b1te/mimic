@@ -1,17 +1,17 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 
-import config from './config';
-import { Mimic, Route } from './lib/mimic';
+import Mimic from './lib/mimic';
 import Cache from './lib/cache';
 import Api from './lib/api';
+
+import config from './config';
 
 const app = express();
 const mimic = new Mimic(config.MOCKS_PATH, new Cache());
 
 (async () => {
 
-  const routes = await mimic.getMockedRoutes();
-  const api = new Api(routes);
+  const api = new Api(await mimic.getMockedRoutes());
 
   api.setMockRoutes(app);
 

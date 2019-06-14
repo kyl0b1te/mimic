@@ -2,17 +2,9 @@ import fs from 'fs';
 import path from 'path';
 
 import Cache from './cache';
+import { Route, RouteMethod, RouteHandler } from './api';
 
-type RouteHandler = () => Promise<string>;
-type RouteMethod = 'get' | 'post' | 'put' | 'delete';
-
-export interface Route {
-  method: RouteMethod;
-  path: string;
-  handler: RouteHandler;
-}
-
-export class Mimic {
+export default class Mimic {
 
   public constructor(
     private mockPath: string,

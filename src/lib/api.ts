@@ -1,5 +1,13 @@
 import { Express, Request, Response } from 'express';
-import { Route } from './mimic';
+
+export type RouteHandler = () => Promise<string>;
+export type RouteMethod = 'get' | 'post' | 'put' | 'delete';
+
+export interface Route {
+  method: RouteMethod;
+  path: string;
+  handler: RouteHandler;
+}
 
 export default class Api {
 
