@@ -13,7 +13,7 @@ export default class Api {
 
   public constructor(private routes: Route[]) { }
 
-  public setMockRoutes(app: Express) {
+  public setMockRoutes(app: Express): void {
 
     this.routes.map((route: Route) => {
 
@@ -27,13 +27,19 @@ export default class Api {
     });
   }
 
-  public getRoutes(req: Request, res: Response) {
+  public getRoutes(req: Request, res: Response): void {
 
-    res.json({ status: "ok", method: 'getRoutes' });
+    const routes = this.routes.map(
+      (route: Route, id: number) => { return { id, ...route } }
+    );
+    res.json({ routes });
   }
 
-  public getRouteById(req: Request, res: Response) {
+  public getRouteById(req: Request, res: Response): void {
 
-    res.json({ status: "ok", method: 'getRouteById' });
+    const route = this.routes[req.params.id];
+    res.json(
+      route ? { id: +req.params.id, ...route } : { }
+    );
   }
 }
