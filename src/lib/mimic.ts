@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-type RouteHandler = () => Promise<Buffer>;
+import Cache from './cache';
+
+type RouteHandler = () => Promise<string>;
 type RouteMethod = 'get' | 'post' | 'put' | 'delete';
 
 export interface Route {
@@ -12,7 +14,10 @@ export interface Route {
 
 export class Mimic {
 
-  public constructor(private mockPath: string) { }
+  public constructor(
+    private mockPath: string,
+    private cache: Cache
+  ) { }
 
   public async getMockedRoutes(): Promise<Route[]> {
 
@@ -34,15 +39,14 @@ export class Mimic {
 
   private getRouteHandler(filePath: string): RouteHandler {
 
-    return () => {
+    return async () => {
 
-      return new Promise((resolve, reject) => {
-
-        fs.readFile(filePath, (err: Error | null, data: Buffer) => {
-
-          return err != null ? reject(err) : resolve(data);
-        });
-      });
+      let mock = this.cache.get(filePath);
+      if (!mock) {
+        mock = (await this.getMockFromFile(filePath)).toString();
+        this.cache.set(filePath, mock);
+      }
+      return mock;
     }
   }
 
@@ -54,6 +58,17 @@ export class Mimic {
 
         const filtered = files.filter((file: string) => file.endsWith('.json'));
         return err != null ? reject(err) : resolve(filtered);
+      });
+    });
+  }
+
+  private getMockFromFile(filePath: string): Promise<Buffer> {
+
+    return new Promise((resolve, reject) => {
+
+      fs.readFile(filePath, (err: Error | null, data: Buffer) => {
+
+        return err != null ? reject(err) : resolve(data);
       });
     });
   }

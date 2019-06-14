@@ -5,18 +5,7 @@ import { Mimic, Route } from './lib/mimic';
 import Cache from './lib/cache';
 
 const app = express();
-const mimic = new Mimic(config.MOCKS_PATH);
-const cache = new Cache();
-
-const getMockData = async (route: Route): Promise<string> => {
-
-  let mock = cache.get(route.path);
-  if (!mock) {
-    mock = (await route.handler()).toString();
-    cache.set(route.path, mock);
-  }
-  return mock;
-};
+const mimic = new Mimic(config.MOCKS_PATH, new Cache());
 
 (async () => {
 
@@ -25,7 +14,7 @@ const getMockData = async (route: Route): Promise<string> => {
 
     app[route.method](route.path, async (req: Request, res: Response) => {
 
-      const mock = await getMockData(route);
+      const mock = await route.handler();
       res.json(JSON.parse(mock));
     });
 
