@@ -6,9 +6,7 @@ RUN npm i -g typescript@3.4.5 eslint @typescript-eslint/eslint-plugin @typescrip
 WORKDIR /app
 
 COPY package*.json /app/
-
 RUN npm ci
-
 COPY . .
 
 RUN npm run lint && npm run build
