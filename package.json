@@ -21,7 +21,11 @@
   "homepage": "https://github.com/zhikiri/mimic#readme",
   "devDependencies": {
     "@types/express": "^4.17.0",
-    "@types/node": "^12.0.8"
+    "@types/node": "^12.0.8",
+    "@typescript-eslint/eslint-plugin": "^1.10.2",
+    "@typescript-eslint/parser": "^1.10.2",
+    "eslint": "^5.16.0",
+    "typescript": "^3.4.5"
   },
   "dependencies": {
     "express": "^4.17.1",
