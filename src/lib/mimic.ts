@@ -17,6 +17,12 @@ export default class Mimic {
     return files.map((file: string) => this.getRouteByFilePath(file));
   }
 
+  public addMockedRoute(method: string, path: string, response: string): Promise<boolean> {
+
+    const filePath = this.getNewMockFilePath(method, path);
+    return this.saveMockData(filePath, response);
+  }
+
   private getRouteByFilePath(filePath: string): Route {
 
     const source = filePath.split('.');
@@ -63,5 +69,21 @@ export default class Mimic {
         return err != null ? reject(err) : resolve(data);
       });
     });
+  }
+
+  private saveMockData(filePath: string, mock: Object): Promise<boolean> {
+
+    return new Promise((resolve, reject) => {
+
+      return fs.writeFile(filePath, JSON.stringify(mock), (err: Error | null) => {
+
+        return err != null ? reject(err) : resolve(true);
+      });
+    });
+  }
+
+  private getNewMockFilePath(method: string, endpoint: string): string {
+
+    return path.join(this.mockPath, `${method.toLowerCase()}.${endpoint.replace(/\//g, '.')}.json`);
   }
 }

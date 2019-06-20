@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import bodyParser from 'body-parser';
 
 import Mimic from './lib/mimic';
 import Cache from './lib/cache';
@@ -23,13 +24,16 @@ const mimic = new Mimic(config.MOCKS_PATH, new Cache());
 
 (async () => {
 
+  app.use(bodyParser.json());
+
   Api.setRoutes(await mimic.getMockedRoutes());
   Api.setMockRoutes(app);
 
-  const apiRoutes = new ApiRoutes();
+  const apiRoutes = new ApiRoutes(mimic);
 
   app.get('/mimic/routes/', handler(apiRoutes, 'getMockedRoutes'));
   app.get('/mimic/routes/:id', handler(apiRoutes, 'getMockedRouteById'));
+  app.post('/mimic/routes/', handler(apiRoutes, 'addMockedRoute'));
 
   app.listen(config.API_PORT, () => {
     console.log(`Server started and listening :${config.API_PORT}`);

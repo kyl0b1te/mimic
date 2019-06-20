@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import Api, { Route } from "./api";
+import Mimic from '../mimic';
 
 interface MockedRoute {
   id: number;
@@ -9,6 +10,10 @@ interface MockedRoute {
 }
 
 export default class ApiRoutes extends Api {
+
+  constructor(private mimic: Mimic) {
+    super();
+  }
 
   public getMockedRoutes(): { routes: MockedRoute[] } {
 
@@ -34,5 +39,16 @@ export default class ApiRoutes extends Api {
       path: route.path,
       response: JSON.parse(await route.handler())
     };
+  }
+
+  public addMockedRoute(req: Request): void {
+
+    const { method, path, response } = req.body;
+    if (!method || !path || !response) {
+
+      return;
+    }
+
+    this.mimic.addMockedRoute(method, path, response);
   }
 }
