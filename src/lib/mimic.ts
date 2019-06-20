@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import Cache from './cache';
-import { Route, RouteMethod, RouteHandler } from './api';
+import { Route, RouteMethod, RouteHandler } from './api/api';
 
 export default class Mimic {
 
