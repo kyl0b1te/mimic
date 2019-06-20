@@ -1,9 +1,11 @@
 import { Request } from 'express';
-import Api, { Route } from "./api";
+
+import ApiError from './api.error';
+import Api from "./api";
 import Mimic from '../mimic';
 
 interface MockedRoute {
-  id: number;
+  id: string;
   method: string;
   path: string;
   response?: Record<string, any>;
@@ -17,10 +19,12 @@ export default class ApiRoutes extends Api {
 
   public getMockedRoutes(): { routes: MockedRoute[] } {
 
-    const routes = Api.routes.map(({ method, path }: Route, id: number) => {
+    const routes: MockedRoute[] = [];
+    for (const hash in Api.routes) {
 
-      return { id, method, path };
-    });
+      const { method, path } = Api.routes[hash];
+      routes.push({ id: hash, method, path });
+    }
 
     return { routes };
   }
@@ -30,11 +34,11 @@ export default class ApiRoutes extends Api {
     const route = Api.routes[req.params.id];
     if (!route) {
 
-      return {};
+      throw new ApiError(404, 'Not Found');
     }
 
     return {
-      id: +req.params.id,
+      id: req.params.id,
       method: route.method,
       path: route.path,
       response: JSON.parse(await route.handler())
@@ -46,7 +50,7 @@ export default class ApiRoutes extends Api {
     const { method, path, response } = req.body;
     if (!method || !path || !response) {
 
-      return;
+      throw new ApiError(420, 'Some parameters are missing in request body');
     }
 
     this.mimic.addMockedRoute(method, path, response);

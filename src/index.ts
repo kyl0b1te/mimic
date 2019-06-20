@@ -8,6 +8,7 @@ import Api from './lib/api/api';
 import ApiRoutes from './lib/api/api.routes';
 
 import config from './config';
+import ApiError from './lib/api/api.error';
 
 type ApiRouteHandler = (req: Request, res: Response) => void;
 
@@ -15,7 +16,17 @@ const handler = (api: any, method: string): ApiRouteHandler => {
 
   return async (req: Request, res: Response) => {
 
-    res.json(await api[method](req, res));
+    try {
+
+      res.json(await api[method](req, res));
+    } catch (err) {
+
+      if (err instanceof ApiError) {
+        res.status(err.code).json({ code: err.code, message: err.message });
+        return;
+      }
+      res.status(500).send('Unexpected error occur');
+    }
   };
 };
 
@@ -26,10 +37,10 @@ const mimic = new Mimic(config.MOCKS_PATH, new Cache());
 
   app.use(bodyParser.json());
 
+  const apiRoutes = new ApiRoutes(mimic);
+
   Api.setRoutes(await mimic.getMockedRoutes());
   Api.setMockRoutes(app);
-
-  const apiRoutes = new ApiRoutes(mimic);
 
   app.get('/mimic/routes/', handler(apiRoutes, 'getMockedRoutes'));
   app.get('/mimic/routes/:id', handler(apiRoutes, 'getMockedRouteById'));
