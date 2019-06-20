@@ -17,7 +17,7 @@ export default class Mimic {
     return files.map((file: string) => this.getRouteByFilePath(file));
   }
 
-  public addMockedRoute(method: string, path: string, response: string): Promise<boolean> {
+  public addMockedRoute(method: string, path: string, response: Record<string, any>): Promise<boolean> {
 
     const filePath = this.getNewMockFilePath(method, path);
     return this.saveMockData(filePath, response);
@@ -71,7 +71,7 @@ export default class Mimic {
     });
   }
 
-  private saveMockData(filePath: string, mock: Object): Promise<boolean> {
+  private saveMockData(filePath: string, mock: Record<string, any>): Promise<boolean> {
 
     return new Promise((resolve, reject) => {
 

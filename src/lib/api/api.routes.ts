@@ -13,7 +13,7 @@ interface MockedRoute {
 
 export default class ApiRoutes extends Api {
 
-  constructor(private mimic: Mimic) {
+  public constructor(private mimic: Mimic) {
     super();
   }
 
@@ -45,7 +45,7 @@ export default class ApiRoutes extends Api {
     };
   }
 
-  public addMockedRoute(req: Request): void {
+  public async addMockedRoute(req: Request): Promise<{ status: boolean }> {
 
     const { method, path, response } = req.body;
     if (!method || !path || !response) {
@@ -53,6 +53,6 @@ export default class ApiRoutes extends Api {
       throw new ApiError(420, 'Some parameters are missing in request body');
     }
 
-    this.mimic.addMockedRoute(method, path, response);
+    return { status: await this.mimic.addMockedRoute(method, path, response) };
   }
 }

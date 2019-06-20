@@ -22,7 +22,7 @@ const handler = (api: any, method: string): ApiRouteHandler => {
     } catch (err) {
 
       if (err instanceof ApiError) {
-        res.status(err.code).json({ code: err.code, message: err.message });
+        res.status(err.getCode()).json({ code: err.getCode(), message: err.message });
         return;
       }
       res.status(500).send('Unexpected error occur');

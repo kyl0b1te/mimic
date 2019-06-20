@@ -1,7 +1,11 @@
 
 export default class ApiError extends Error {
 
-  constructor(public code: number, message: string) {
+  public constructor(private code: number, message: string) {
     super(message)
+  }
+
+  public getCode(): number {
+    return this.code;
   }
 }
