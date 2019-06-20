@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { Express, Request, Response } from 'express';
+import Log, { LogRecord } from '../log';
 
 export type RouteHandler = () => Promise<string>;
 export type RouteMethod = 'get' | 'post' | 'put' | 'delete';
@@ -30,6 +31,8 @@ export default class Api {
 
       app[route.method](route.path, async (req: Request, res: Response) => {
 
+        Log.save(hash, Api.getRequestLogRecord(req));
+
         const mock = await route.handler();
         res.json(JSON.parse(mock));
       });
@@ -41,5 +44,10 @@ export default class Api {
   protected static getRouteHash(route: Route): string {
 
     return crypto.createHash('sha1').update(route.method + route.path).digest('hex');
+  }
+
+  private static getRequestLogRecord(req: Request): LogRecord {
+
+    return { headers: req.headers, query: req.params, body: req.body };
   }
 }
