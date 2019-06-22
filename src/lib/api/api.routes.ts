@@ -1,7 +1,7 @@
 import { Request } from 'express';
 
 import ApiError from './api.error';
-import Api from "./api";
+import Api, { Route } from "./api";
 import Mimic from '../mimic';
 import Log, { LogRecord } from '../log';
 
@@ -33,12 +33,7 @@ export default class ApiRoutes extends Api {
 
   public async getMockedRouteById(req: Request): Promise<MockedRoute | Record<string, any>> {
 
-    const hash = req.params.id;
-    const route = Api.routes[hash];
-    if (!route) {
-
-      throw new ApiError(404, 'Not Found');
-    }
+    const { hash, route } = this.getRequestRoute(req);
 
     return {
       id: hash,
@@ -58,5 +53,17 @@ export default class ApiRoutes extends Api {
     }
 
     return { status: await this.mimic.addMockedRoute(method, path, response) };
+  }
+
+  private getRequestRoute(req: Request): { hash: string, route: Route } {
+
+    const hash = req.params.id;
+    const route = Api.routes[hash];
+    if (!route) {
+
+      throw new ApiError(404, 'Not Found');
+    }
+
+    return { hash, route };
   }
 }
