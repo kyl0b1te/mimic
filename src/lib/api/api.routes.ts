@@ -14,9 +14,7 @@ interface MockedRoute {
 
 export default class ApiRoutes extends Api {
 
-  public constructor(private mimic: Mimic) {
-    super();
-  }
+  public constructor(private mimic: Mimic) { super(); }
 
   public getMockedRoutes(): { routes: MockedRoute[] } {
 

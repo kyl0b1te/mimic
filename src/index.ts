@@ -43,10 +43,10 @@ const mimic = new Mimic(config.MOCKS_PATH, new Cache());
   Api.setMockRoutes(app);
 
   app.get('/mimic/routes/', handler(apiRoutes, 'getMockedRoutes'));
+  app.post('/mimic/routes/', handler(apiRoutes, 'addMockedRoute'));
+
   app.get('/mimic/routes/:id', handler(apiRoutes, 'getMockedRouteById'));
   app.get('/mimic/routes/:id/logs', handler(apiRoutes, 'getMockedRouteLogsById'));
-
-  app.post('/mimic/routes/', handler(apiRoutes, 'addMockedRoute'));
 
   app.listen(config.API_PORT, () => {
     console.log(`Server started and listening :${config.API_PORT}`);
