@@ -48,6 +48,6 @@ export default class Api {
 
   private static getRequestLogRecord(req: Request): LogRecord {
 
-    return { headers: req.headers, query: req.params, body: req.body };
+    return { headers: req.headers, query: req.query, body: req.body };
   }
 }
