@@ -10,7 +10,6 @@ interface MockedRoute {
   method: string;
   path: string;
   response?: Record<string, any>;
-  logs?: LogRecord[];
 }
 
 export default class ApiRoutes extends Api {
@@ -39,8 +38,7 @@ export default class ApiRoutes extends Api {
       id: hash,
       method: route.method,
       path: route.path,
-      response: JSON.parse(await route.handler()),
-      logs: Log.getLogs(hash)
+      response: JSON.parse(await route.handler())
     };
   }
 
@@ -53,6 +51,12 @@ export default class ApiRoutes extends Api {
     }
 
     return { status: await this.mimic.addMockedRoute(method, path, response) };
+  }
+
+  public getMockedRouteLogsById(req: Request): { logs: LogRecord[] } {
+
+    const { hash } = this.getRequestRoute(req);
+    return { logs: Log.getLogs(hash) };
   }
 
   private getRequestRoute(req: Request): { hash: string, route: Route } {
