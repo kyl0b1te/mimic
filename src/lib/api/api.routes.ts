@@ -57,7 +57,7 @@ export default class ApiRoutes extends Api {
     return { logs: Log.getLogs(hash) };
   }
 
-  private getRequestRoute(req: Request): { hash: string, route: Route } {
+  private getRequestRoute(req: Request): { hash: string; route: Route } {
 
     const hash = req.params.id;
     const route = Api.routes[hash];
