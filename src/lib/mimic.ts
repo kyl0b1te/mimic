@@ -19,8 +19,14 @@ export default class Mimic {
 
   public addMockedRoute(method: string, path: string, response: Record<string, any>): Promise<boolean> {
 
-    const filePath = this.getNewMockFilePath(method, path);
+    const filePath = this.getMockFilePath(method, path);
     return this.saveMockData(filePath, response);
+  }
+
+  public deleteMockedRoute(route: Route): Promise<boolean> {
+
+    const filePath = this.getMockFilePath(route.method, route.path.substr(1));
+    return this.deleteMockData(filePath);
   }
 
   private getRouteByFilePath(filePath: string): Route {
@@ -82,8 +88,22 @@ export default class Mimic {
     });
   }
 
-  private getNewMockFilePath(method: string, endpoint: string): string {
+  private getMockFilePath(method: string, endpoint: string): string {
 
     return path.join(this.mockPath, `${method.toLowerCase()}.${endpoint.replace(/\//g, '.')}.json`);
+  }
+
+  private deleteMockData(filePath: string): Promise<boolean> {
+
+    return new Promise((resolve, reject) => {
+
+      console.log(filePath);
+
+      fs.unlink(filePath, (err: Error | null) => {
+
+        console.log(err);
+        return err != null ? reject(err) : resolve(true);
+      });
+    });
   }
 }
