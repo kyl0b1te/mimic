@@ -3,3 +3,4 @@ dist/
 
 mocks/*
 !mocks/.gitkeep
+.env

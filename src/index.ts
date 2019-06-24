@@ -7,7 +7,6 @@ import Cache from './lib/cache';
 import Api from './lib/api/api';
 import ApiRoutes from './lib/api/api.routes';
 
-import config from './config';
 import ApiError from './lib/api/api.error';
 
 type ApiRouteHandler = (req: Request, res: Response) => void;
@@ -31,7 +30,7 @@ const handler = (api: any, method: string): ApiRouteHandler => {
 };
 
 const app = express();
-const mimic = new Mimic(config.MOCKS_PATH, new Cache());
+const mimic = new Mimic(process.env.MOCKS_PATH + '', new Cache());
 
 (async () => {
 
@@ -49,7 +48,7 @@ const mimic = new Mimic(config.MOCKS_PATH, new Cache());
   app.get('/mimic/routes/:id/logs', handler(apiRoutes, 'getMockedRouteLogsById'));
   app.delete('/mimic/routes/:id', handler(apiRoutes, 'deleteMockedRoute'));
 
-  app.listen(config.API_PORT, () => {
-    console.log(`Server started and listening :${config.API_PORT}`);
+  app.listen(process.env.API_PORT, () => {
+    console.log(`Server started and listening :${process.env.API_PORT}`);
   });
 })();
