@@ -97,11 +97,8 @@ export default class Mimic {
 
     return new Promise((resolve, reject) => {
 
-      console.log(filePath);
-
       fs.unlink(filePath, (err: Error | null) => {
 
-        console.log(err);
         return err != null ? reject(err) : resolve(true);
       });
     });

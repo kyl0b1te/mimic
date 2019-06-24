@@ -60,7 +60,6 @@ export default class ApiRoutes extends Api {
   public async deleteMockedRoute(req: Request): Promise<{ status: boolean }> {
 
     const { route } = this.getRequestRoute(req);
-    console.log(route);
     return { status: await this.mimic.deleteMockedRoute(route) }
   }
 
