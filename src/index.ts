@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import bodyParser from 'body-parser';
 
 import Mimic from './lib/mimic';
@@ -7,46 +7,23 @@ import Cache from './lib/cache';
 import Api from './lib/api/api';
 import ApiRoutes from './lib/api/api.routes';
 
-import ApiError from './lib/api/api.error';
-
-type ApiRouteHandler = (req: Request, res: Response) => void;
-
-const handler = (api: any, method: string): ApiRouteHandler => {
-
-  return async (req: Request, res: Response) => {
-
-    try {
-
-      res.json(await api[method](req, res));
-    } catch (err) {
-
-      if (err instanceof ApiError) {
-        res.status(err.getCode()).json({ code: err.getCode(), message: err.message });
-        return;
-      }
-      res.status(500).send('Unexpected error occur');
-    }
-  };
-};
-
 const app = express();
-const mimic = new Mimic(process.env.MOCKS_PATH + '', new Cache());
-
 (async () => {
+
+  const mimic = new Mimic(process.env.MOCKS_PATH + '', new Cache());
 
   app.use(bodyParser.json());
 
   const apiRoutes = new ApiRoutes(mimic);
-
   Api.setRoutes(await mimic.getMockedRoutes());
   Api.setMockRoutes(app);
 
-  app.get('/mimic/routes/', handler(apiRoutes, 'getMockedRoutes'));
-  app.post('/mimic/routes/', handler(apiRoutes, 'addMockedRoute'));
+  app.get('/mimic/routes/', Api.handler(apiRoutes, 'getMockedRoutes'));
+  app.post('/mimic/routes/', Api.handler(apiRoutes, 'addMockedRoute'));
 
-  app.get('/mimic/routes/:id', handler(apiRoutes, 'getMockedRouteById'));
-  app.get('/mimic/routes/:id/logs', handler(apiRoutes, 'getMockedRouteLogsById'));
-  app.delete('/mimic/routes/:id', handler(apiRoutes, 'deleteMockedRoute'));
+  app.get('/mimic/routes/:id', Api.handler(apiRoutes, 'getMockedRouteById'));
+  app.get('/mimic/routes/:id/logs', Api.handler(apiRoutes, 'getMockedRouteLogsById'));
+  app.delete('/mimic/routes/:id', Api.handler(apiRoutes, 'deleteMockedRoute'));
 
   app.listen(process.env.API_PORT, () => {
     console.log(`Server started and listening :${process.env.API_PORT}`);

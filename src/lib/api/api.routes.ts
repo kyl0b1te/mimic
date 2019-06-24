@@ -18,12 +18,11 @@ export default class ApiRoutes extends Api {
 
   public getMockedRoutes(): { routes: MockedRoute[] } {
 
-    const routes: MockedRoute[] = [];
-    for (const hash in Api.routes) {
+    const routes = Object.keys(Api.routes).map((id: string) => {
 
-      const { method, path } = Api.routes[hash];
-      routes.push({ id: hash, method, path });
-    }
+      const { method, path } = Api.routes[id];
+      return { id, method, path };
+    });
 
     return { routes };
   }
@@ -60,7 +59,7 @@ export default class ApiRoutes extends Api {
   public async deleteMockedRoute(req: Request): Promise<{ status: boolean }> {
 
     const { route } = this.getRequestRoute(req);
-    return { status: await this.mimic.deleteMockedRoute(route) }
+    return { status: await this.mimic.deleteMockedRoute(route) };
   }
 
   private getRequestRoute(req: Request): { hash: string; route: Route } {
