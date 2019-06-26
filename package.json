@@ -4,7 +4,7 @@
   "description": "http request mocker",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register tests/**/*.ts",
+    "test": "mocha -r ts-node/register tests/**/*.test.ts",
     "build": "rm -rf dist/* && tsc",
     "start": "nodemon --watch /mimic/mocks --ignore '/mimic/mocks/*.log' dist/index.js",
     "lint": "eslint src/ --ext .ts"
