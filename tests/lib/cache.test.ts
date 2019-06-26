@@ -20,6 +20,13 @@ describe('Cache', () => {
     expect(cache['cache']['a']).to.be.a('string').that.is.equal('1');
   });
 
+  it('should be able to set complex key', () => {
+
+    cache.set('path.to.the.a', '1');
+    expect(cache['cache']['path']['to']['the']['a'])
+      .to.be.a('string').that.is.equal('1');
+  })
+
   it('should overwrite previously set cache value', () => {
 
     cache.set('a', '1');
@@ -33,8 +40,14 @@ describe('Cache', () => {
     expect(cache.get('a')).to.be.a('string').that.is.equal('1');
   });
 
+  it('should be able to get value by complex path', () => {
+
+    cache.set('path.to.the.a', '1');
+    expect(cache.get('path.to.the.a')).to.be.a('string').that.is.equal('1');
+  })
+
   it('should be able to return default value if the key was not set', () => {
 
     expect(cache.get('a')).to.be.a('undefined');
-  })
+  });
 });
