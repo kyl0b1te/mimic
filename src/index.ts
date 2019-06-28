@@ -1,31 +1,36 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import Mimic from './lib/mimic';
+import Log from './lib/log';
 import Cache from './lib/cache';
+import Mimic from './lib/mimic/mimic';
+import Storage from './lib/mimic/storage';
 
 import Api from './lib/api/api';
-import ApiRoutes from './lib/api/api.routes';
+import ApiInternal from './lib/api/api.internal';
 
 const app = express();
+
 (async () => {
 
-  const mimic = new Mimic(process.env.MOCKS_PATH + '', new Cache());
+  const cache = new Cache();
 
   app.use(bodyParser.json());
+  app.set('cache', cache);
+  app.set('log', new Log(cache));
 
-  const apiRoutes = new ApiRoutes(mimic);
-  Api.setRoutes(await mimic.getMockedRoutes());
-  Api.setMockRoutes(app);
+  const storage = new Storage(process.env.MOCKS_PATH + '');
+  const mimic = new Mimic(storage);
 
-  app.get('/mimic/routes/', Api.handler(apiRoutes, 'getMockedRoutes'));
-  app.post('/mimic/routes/', Api.handler(apiRoutes, 'addMockedRoute'));
+  const api = new Api(app);
+  api.setRoutes([
+    ...await mimic.getMockedRoutes(),
+    ...(new ApiInternal(app, mimic)).getInternalApiRoutes()
+  ]);
 
-  app.get('/mimic/routes/:id', Api.handler(apiRoutes, 'getMockedRouteById'));
-  app.get('/mimic/routes/:id/logs', Api.handler(apiRoutes, 'getMockedRouteLogsById'));
-  app.delete('/mimic/routes/:id', Api.handler(apiRoutes, 'deleteMockedRoute'));
+  if (!process.env.API_PORT) {
+    throw new Error('API port is missing in env');
+  }
 
-  app.listen(process.env.API_PORT, () => {
-    console.log(`Server started and listening :${process.env.API_PORT}`);
-  });
+  api.startServer(+process.env.API_PORT);
 })();
