@@ -50,4 +50,10 @@ describe('Cache', () => {
 
     expect(cache.get('a')).to.be.a('undefined');
   });
+
+  it('should return set value', () => {
+
+    const val = cache.set('test', '1');
+    expect(val).to.be.equal('1');
+  })
 });

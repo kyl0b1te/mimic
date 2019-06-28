@@ -6,9 +6,9 @@ export default class Cache {
 
   private cache: Storage = {};
 
-  public set(key: string, value: any): void {
+  public set(key: string, value: any): any {
 
-    this.insert(key.split('.'), value);
+    return this.insert(key.split('.'), value);
   }
 
   public get(key: string): any | undefined {
@@ -18,7 +18,7 @@ export default class Cache {
 
   private insert(path: string[], value: any): void {
 
-    this.iterate(path, (next: any, key: any, idx: number): void => {
+    return this.iterate(path, (next: any, key: any, idx: number): void => {
 
       if (idx == path.length - 1) {
         next[key] = value;
