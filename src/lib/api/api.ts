@@ -1,69 +1,104 @@
 import { Express, Request, Response } from 'express';
-import crypto from 'crypto';
 
-import Log, { LogRecord } from '../log';
 import ApiError from './api.error';
+import Cache from '../cache';
+import Log from '../log';
 
-type ApiRouteHandler = (req: Request, res: Response) => void;
+type ApiResponse = Promise<Buffer | Record<string, any>>;
 
-export type RouteHandler = () => Promise<string>;
-export type RouteMethod = 'get' | 'post' | 'put' | 'delete';
+export type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
-export interface Route {
+export interface ApiRoute {
+  hash: string;
   path: string;
-  method: RouteMethod;
-  handler: RouteHandler;
+  method: HttpMethod;
+  needLog: boolean;
+  needCache: boolean;
+  handler: (req: Request, res: Response) => ApiResponse;
 }
 
 export default class Api {
 
-  protected static routes: { [key: string]: Route } = {};
+  private log: Log;
+  private cache: Cache;
 
-  public static handler(api: any, method: string): ApiRouteHandler {
+  public constructor(private app: Express) {
 
-    return async (req: Request, res: Response) => {
+    this.cache = this.app.get('cache');
+    this.log = this.app.get('log');
+  }
 
-      try {
+  public setRoutes(routes: ApiRoute[]): void {
 
-        res.json(await api[method](req, res));
-      } catch (err) {
+    routes.map((route: ApiRoute) => {
 
-        if (err instanceof ApiError) {
-          res.status(err.getCode()).json({ code: err.getCode(), message: err.message });
-          return;
+      this.app[route.method](route.path, async (req: Request, res: Response) => {
+
+        this.saveLog(route, req);
+        res.setHeader('Content-Type', 'application/json');
+
+        try {
+
+          await this.sendResponse(route, req, res);
+        } catch (err) {
+
+          if (err instanceof ApiError) {
+            res.status(err.getCode()).json({ code: err.getCode(), message: err.message });
+            return;
+          }
+          res.status(500).send('Unexpected error occur');
         }
-        res.status(500).send('Unexpected error occur');
-      }
-    };
-  }
-
-  public static setRoutes(routes: Route[]): void {
-
-    routes.map((route: Route) => Api.routes[Api.getRouteHash(route)] = route);
-  }
-
-  public static setMockRoutes(app: Express): void {
-
-    for (const hash in Api.routes) {
-
-      const { method, path, handler } = Api.routes[hash];
-      app[method](path, async (req: Request, res: Response) => {
-
-        Log.save(hash, Api.getRequestLogRecord(req));
-        res.json(JSON.parse(await handler()));
       });
+    });
+  }
 
-      console.log(`Route ${method.toUpperCase()} '${path}' was set`);
+  public startServer(port: number): void {
+
+    this.app.listen(port, () => {
+      console.log(`Server started and listening :${port}`);
+    });
+  }
+
+  private saveLog(route: ApiRoute, req: Request): void {
+
+    if (!route.needLog) {
+
+      return;
     }
+    this.log.save(route.hash, {
+      headers: req.headers,
+      query: req.query,
+      body: req.body
+    });
   }
 
-  protected static getRouteHash(route: Route): string {
+  private async sendResponse(route: ApiRoute, req: Request, res: Response): Promise<void> {
 
-    return crypto.createHash('sha1').update(route.method + route.path).digest('hex');
+    const data = await this.getResponseData(route, req, res);
+    if (data instanceof Buffer) {
+
+      res.send(data.toString());
+      return;
+    }
+    res.json(data);
   }
 
-  private static getRequestLogRecord(req: Request): LogRecord {
+  private async getResponseData(route: ApiRoute, req: Request, res: Response): ApiResponse {
 
-    return { headers: req.headers, query: req.query, body: req.body };
+    if (route.needCache) {
+
+      return await this.getResponseFromCache(route, req, res);
+    }
+    return await route.handler(req, res);
+  }
+
+  private async getResponseFromCache(route: ApiRoute, req: Request, res: Response): Promise<Buffer> {
+
+    const response = this.cache.get(`routes.${route.hash}`);
+    if (!response) {
+
+      return this.cache.set(`routes.${route.hash}`, await route.handler(req, res));
+    }
+    return response;
   }
 }
