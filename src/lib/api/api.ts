@@ -8,6 +8,11 @@ type ApiResponse = Promise<Buffer | Record<string, any>>;
 
 export type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 
+export function isHttpMethod(method: string): method is HttpMethod {
+
+  return ['get', 'post', 'put', 'delete'].indexOf(method) >= 0;
+}
+
 export interface ApiRoute {
   hash: string;
   path: string;

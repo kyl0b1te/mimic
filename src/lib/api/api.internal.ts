@@ -2,7 +2,7 @@ import { Express, Request, Response } from 'express';
 
 import ApiError from './api.error';
 import Log, { LogRecord } from '../log';
-import { ApiRoute, HttpMethod } from './api';
+import { ApiRoute, HttpMethod, isHttpMethod } from './api';
 import { Mock } from '../mimic/storage';
 import Mimic from '../mimic/mimic';
 
@@ -34,7 +34,7 @@ export default class ApiInternal {
   private async addMock(req: Request): Promise<{ status: boolean }> {
 
     const { method, path, response } = req.body;
-    if (!method || !path || !response) {
+    if (!method || !path || !response || !isHttpMethod(method)) {
 
       throw new ApiError(422, 'Some parameters are missing in request body');
     }
