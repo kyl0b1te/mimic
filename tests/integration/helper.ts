@@ -1,8 +1,8 @@
 import { Express } from 'express';
 import Server from '../../src/server';
 
-export default async (): Promise<Express> => {
+export default async (path: string = '/mimic/tests/mocks'): Promise<Express> => {
 
-  const server = await (new Server()).setRoutes('/mimic/tests/mocks');
+  const server = await (new Server()).setRoutes(path);
   return server.app;
 }

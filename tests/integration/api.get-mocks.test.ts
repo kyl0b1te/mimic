@@ -12,12 +12,19 @@ describe('GET /mimic/mocks', () => {
   let app: Express;
   beforeEach(async () => app = await getApp());
 
+  it('should be empty list of mocks for empty mocks folder', async () => {
+
+    chai.request(await getApp('/tmp')).get('/mimic/mocks/').end((_, res) => {
+
+      expect(res.body).to.be.an('array').that.is.empty;
+    });
+  });
+
   it('should return a 200 status', (done) => {
 
     chai.request(app).get('/mimic/mocks').end((_, res) => {
 
-      expect(res).to.be.json;
-      expect(res).to.have.status(200);
+      expect(res.status).to.be.equal(200);
       done();
     })
   });
