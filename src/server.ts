@@ -24,7 +24,7 @@ export default class Server {
     this.app.set('log', new Log(cache));
   }
 
-  async setRoutes(mocksPath: string): Promise<Server> {
+  public async setRoutes(mocksPath: string): Promise<Server> {
 
     const storage = new Storage(mocksPath);
     const mimic = new Mimic(storage);
@@ -38,7 +38,7 @@ export default class Server {
     return this;
   }
 
-  start(appPort: number): void {
+  public start(appPort: number): void {
 
     this.api.startServer(appPort);
   }
