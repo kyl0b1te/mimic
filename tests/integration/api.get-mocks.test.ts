@@ -7,7 +7,7 @@ import getApp from './helper';
 
 chai.use(chaiHttp);
 
-describe('/GET /mimic/mocks', () => {
+describe('GET /mimic/mocks', () => {
 
   let app: Express;
   beforeEach(async () => app = await getApp());
