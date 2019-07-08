@@ -11,9 +11,10 @@ import ApiInternal from './lib/api/api.internal';
 
 export default class Server {
 
-  private app: Express;
+  public app: Express;
+  private api: Api;
 
-  constructor() {
+  public constructor() {
 
     this.app = express();
     this.app.use(bodyParser.json());
@@ -23,17 +24,22 @@ export default class Server {
     this.app.set('log', new Log(cache));
   }
 
-  async start(mocksPath: string, appPort: number) {
+  async setRoutes(mocksPath: string): Promise<Server> {
 
     const storage = new Storage(mocksPath);
     const mimic = new Mimic(storage);
 
-    const api = new Api(this.app);
-    api.setRoutes([
+    this.api = new Api(this.app);
+    this.api.setRoutes([
       ...await mimic.getMockedRoutes(),
       ...(new ApiInternal(this.app, mimic)).getInternalApiRoutes()
     ]);
 
-    api.startServer(appPort);
+    return this;
+  }
+
+  start(appPort: number): void {
+
+    this.api.startServer(appPort);
   }
 }

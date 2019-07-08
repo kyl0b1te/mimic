@@ -10,5 +10,6 @@ import Server from './server';
     throw new Error('API port is missing in env');
   }
 
-  await (new Server()).start(process.env.MOCKS_PATH, +process.env.API_PORT);
+  const server = await (new Server()).setRoutes(process.env.MOCKS_PATH);
+  server.start(+process.env.API_PORT);
 })();
