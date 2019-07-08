@@ -28,7 +28,7 @@ export default class Mimic {
     return this.mocks;
   }
 
-  public async addMock(method: string, path: string, data: Record<string, any>): Promise<{status: boolean}> {
+  public async addMock(method: string, path: string, data: Record<string, any>): Promise<{ status: boolean }> {
 
     const filePath = this.storage.getMockFilePath(method, path);
     return { status: await this.storage.saveMock(filePath, data) };
@@ -39,7 +39,7 @@ export default class Mimic {
     return this.mocks.find((mock: Mock) => mock.hash == hash);
   }
 
-  public async deleteMock(mock: Mock): Promise<{status: boolean}> {
+  public async deleteMock(mock: Mock): Promise<{ status: boolean }> {
 
     return { status: await this.storage.deleteMock(mock.mockFilePath) };
   }
