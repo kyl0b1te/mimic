@@ -1,0 +1,19 @@
+{
+  "products": [
+    {
+      "code": "TGS8X-81",
+      "name": "Battery Tender® 12V, 7Ah, 120CCA AGM Engine Start Battery",
+      "price": 40.99
+    },
+    {
+      "code": "032-73",
+      "name": "Angle Mounting Brackets",
+      "price": 9.95
+    },
+    {
+      "code": "500-14",
+      "name": "Utility Bag- Medium",
+      "price": 6.95
+    }
+  ]
+}
