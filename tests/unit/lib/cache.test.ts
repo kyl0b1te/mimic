@@ -1,7 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 
-import Cache from '../../src/lib/cache';
+import Cache from '../../../src/lib/cache';
 
 describe('Cache', () => {
 

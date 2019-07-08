@@ -1,8 +1,8 @@
 import 'mocha';
 import { expect } from 'chai';
 
-import Cache from '../../src/lib/cache';
-import Log, { LogRecord } from '../../src/lib/log';
+import Cache from '../../../src/lib/cache';
+import Log, { LogRecord } from '../../../src/lib/log';
 
 describe('Log', () => {
 
