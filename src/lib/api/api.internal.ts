@@ -41,10 +41,13 @@ export default class ApiInternal {
     return await this.mimic.addMock(method, path, response);
   }
 
-  private getMockById(req: Request): Mock {
+  private async getMockById(req: Request): Promise<Mock & { response: Record<string, any> }> {
 
     const { mock } = this.getRequestMock(req);
-    return mock;
+    return {
+      ...mock,
+      response: JSON.parse((await mock.getMockResponse()).toString())
+    };
   }
 
   private getMockLogs(req: Request): LogRecord[] {
