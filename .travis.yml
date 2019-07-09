@@ -4,4 +4,8 @@ services:
   - docker
 
 install:
-  - docker build -t zhikiri/mimic .
+  - docker build -t mimic .
+  - docker run -d -p -e API_PORT -e MOCKS_PATH 127.0.0.1:8080:8080 --name mimic mimic
+
+script:
+  - docker ps | grep -q mimic
