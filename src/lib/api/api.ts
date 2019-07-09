@@ -54,6 +54,8 @@ export default class Api {
           res.status(500).send('Unexpected error occur');
         }
       });
+
+      console.log(`Route ${route.method.toUpperCase()} ${route.path} was set`);
     });
   }
 
