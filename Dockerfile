@@ -1,23 +1,23 @@
 FROM alpine:3.9
 
 RUN apk add --no-cache bash nodejs npm
-RUN npm i -g typescript@3.4.5 eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser
 
-WORKDIR /app
+WORKDIR /mimic
 
-COPY package*.json /app/
+COPY package*.json /mimic/
 RUN npm ci
 COPY . .
 
-RUN npm run lint && npm run build
-
+RUN npm run lint \
+  && npm run test \
+  && npm run build
 
 
 FROM node:11.10
 
 WORKDIR /mimic
 
-COPY --from=0 /app/dist dist/
+COPY --from=0 /mimic/dist dist/
 COPY package*.json /mimic/
 
 RUN npm ci --production
