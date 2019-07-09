@@ -1,4 +1,5 @@
 # mimic
+[![Build Status](https://travis-ci.com/zhikiri/mimic.svg?branch=master)](https://travis-ci.com/zhikiri/mimic)
 
 Mimic is a mockup server for REST API that tend to help you on a development and testing stages.
 With mimic you can easily mockup some third-party REST API's (for now, only JSON based).
