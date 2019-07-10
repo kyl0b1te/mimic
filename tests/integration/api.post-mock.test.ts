@@ -65,15 +65,26 @@ describe('POST /mimic/mocks', () => {
       });
   });
 
+  it('should return a mock model in success request', (done) => {
+
+    chai.request(app).post('/mimic/mocks/').type('json')
+      .send({ method: 'get', path: '/test', response: { test: 1 } })
+      .end((_, res) => {
+
+        expect(res.status).to.be.equal(200);
+        expect(res.body).to.have.all.keys('endpoint', 'httpMethod', 'mockFilePath', 'hash');
+        done();
+      });
+  });
+
   it('should succeed and create a new mock file', (done) => {
 
     const response = { test: '1' };
 
     chai.request(app).post('/mimic/mocks/').type('json')
       .send({ method: 'get', path: '/test', response })
-      .end((_, res) => {
+      .end(() => {
 
-        expect(res.status).to.be.equal(200);
         expect(`${testPath}/get.test.json`).to.be.a.file()
           .with.content(JSON.stringify(response));
 

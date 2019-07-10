@@ -46,4 +46,17 @@ describe('DELETE /mimic/mocks/:id', () => {
       });
     });
   });
+
+  it('should return mock model in response for successful request', (done) => {
+
+    chai.request(app).get('/mimic/mocks/').end((_, res) => {
+
+      chai.request(app).delete(`/mimic/mocks/${res.body[0].hash}`).end((_, res) => {
+
+        expect(res.status).to.be.equal(200);
+        expect(res.body).to.have.all.keys('endpoint', 'httpMethod', 'mockFilePath', 'hash');
+        done();
+      });
+    });
+  });
 });
