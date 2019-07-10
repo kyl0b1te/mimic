@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha -r ts-node/register 'tests/**/*.test.ts'",
     "build": "rm -rf dist/* && tsc",
-    "start": "nodemon --watch /mimic/mocks --ignore '/mimic/mocks/*.log' dist/index.js",
+    "start": "pm2 start dist/index.js --watch /mimic/mocks",
     "lint": "eslint src/ --ext .ts"
   },
   "repository": {
@@ -40,6 +40,6 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "nodemon": "^1.19.1"
+    "pm2": "^3.5.1"
   }
 }
