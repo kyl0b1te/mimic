@@ -28,10 +28,16 @@ export default class Mimic {
     return this.mocks;
   }
 
-  public async addMock(method: string, path: string, data: Record<string, any>): Promise<{ status: boolean }> {
+  public async addMock(method: string, path: string, data: Record<string, any>): Promise<Mock> {
 
     const filePath = this.storage.getMockFilePath(method, path);
-    return { status: await this.storage.saveMock(filePath, data) };
+    return await this.storage.saveMock(filePath, data);
+  }
+
+  public async updateMock(mock: Mock, method: string, path: string, data: Record<string, any>): Promise<Mock> {
+
+    const newFilePath = this.storage.getMockFilePath(method, path);
+    return await this.storage.updateMock(mock.mockFilePath, newFilePath, data);
   }
 
   public getMockByHash(hash: string): Mock | undefined {
@@ -39,8 +45,8 @@ export default class Mimic {
     return this.mocks.find((mock: Mock) => mock.hash == hash);
   }
 
-  public async deleteMock(mock: Mock): Promise<{ status: boolean }> {
+  public async deleteMock(mock: Mock): Promise<Mock> {
 
-    return { status: await this.storage.deleteMock(mock.mockFilePath) };
+    return await this.storage.deleteMock(mock.mockFilePath);
   }
 }

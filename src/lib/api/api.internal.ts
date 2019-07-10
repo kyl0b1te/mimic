@@ -6,6 +6,12 @@ import { ApiRoute, HttpMethod, isHttpMethod } from './api';
 import { Mock } from '../mimic/storage';
 import Mimic from '../mimic/mimic';
 
+interface RequestMockParameters {
+  method: HttpMethod;
+  path: string;
+  response: Record<string, any>;
+}
+
 export default class ApiInternal {
 
   private log: Log;
@@ -21,8 +27,9 @@ export default class ApiInternal {
       this.route('get', '/mocks', this.getMocks),
       this.route('post', '/mocks', this.addMock),
       this.route('get', '/mocks/:id', this.getMockById),
-      this.route('get', '/mocks/:id/logs', this.getMockLogs),
-      this.route('delete', '/mocks/:id', this.delMockById)
+      this.route('put', '/mocks/:id', this.updateMock),
+      this.route('delete', '/mocks/:id', this.delMockById),
+      this.route('get', '/mocks/:id/logs', this.getMockLogs)
     ];
   }
 
@@ -31,13 +38,9 @@ export default class ApiInternal {
     return this.mimic.getMocks();
   }
 
-  private async addMock(req: Request): Promise<{ status: boolean }> {
+  private async addMock(req: Request): Promise<Mock> {
 
-    const { method, path, response } = req.body;
-    if (!method || !path || !response || !isHttpMethod(method)) {
-
-      throw new ApiError(422, 'Some parameters are missing in request body');
-    }
+    const { method, path, response } = this.getMockParametersFromRequest(req);
     return await this.mimic.addMock(method, path, response);
   }
 
@@ -56,10 +59,28 @@ export default class ApiInternal {
     return this.log.getLogs(hash);
   }
 
-  private async delMockById(req: Request): Promise<{ status: boolean }> {
+  private async delMockById(req: Request): Promise<Mock> {
 
     const { mock } = this.getRequestMock(req);
     return await this.mimic.deleteMock(mock);
+  }
+
+  private async updateMock(req: Request): Promise<Mock> {
+
+    const { mock } = this.getRequestMock(req);
+    const { method, path, response } = this.getMockParametersFromRequest(req);
+
+    return await this.mimic.updateMock(mock, method, path, response);
+  }
+
+  private getMockParametersFromRequest(req: Request): RequestMockParameters {
+
+    const { method, path, response } = req.body;
+    if (!method || !path || !response || !isHttpMethod(method)) {
+
+      throw new ApiError(422, 'Some parameters are missing in request body');
+    }
+    return { method, path, response };
   }
 
   private getRequestMock(req: Request): { hash: string; mock: Mock } {
