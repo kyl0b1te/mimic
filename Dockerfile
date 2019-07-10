@@ -19,8 +19,9 @@ WORKDIR /mimic
 
 COPY --from=0 /mimic/dist dist/
 COPY package*.json /mimic/
+COPY mimic-pm2.config.js /mimic/
 
 RUN npm ci --production
 
 EXPOSE 8080
-CMD ["npm", "run", "start"]
+CMD ["./node_modules/.bin/pm2-runtime", "start", "mimic-pm2.config.js"]
