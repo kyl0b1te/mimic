@@ -15,6 +15,7 @@ RUN npm run lint \
 
 FROM node:11.10
 
+RUN npm install pm2 -g
 WORKDIR /mimic
 
 COPY --from=0 /mimic/dist dist/
@@ -24,4 +25,4 @@ COPY mimic-pm2.config.js /mimic/
 RUN npm ci --production
 
 EXPOSE 8080
-CMD ["./node_modules/.bin/pm2-runtime", "start", "mimic-pm2.config.js"]
+CMD ["pm2-runtime", "start", "mimic-pm2.config.js"]
