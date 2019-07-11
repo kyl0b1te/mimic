@@ -69,11 +69,22 @@ describe('PUT /mimic/mocks/:id', () => {
     });
   });
 
+  it('should return 422 for invalid endpoint parameter value', () => {
+
+    chai.request(app).put(`/mimic/mocks/${mock.hash}`)
+      .type('json')
+      .send({ httpMethod: 'get', endpoint: 'tests', response: { test: 'changed' } })
+      .end((_, res) => {
+
+        expect(res).to.have.status(422);
+      });
+  });
+
   it('should update file content', (done) => {
 
     chai.request(app).put(`/mimic/mocks/${mock.hash}`)
       .type('json')
-      .send({ method: 'get', path: '/tests', response: { test: 'changed' } })
+      .send({ httpMethod: 'get', endpoint: '/tests', response: { test: 'changed' } })
       .end((_, res) => {
 
         expect(res).to.have.status(200);
@@ -87,7 +98,7 @@ describe('PUT /mimic/mocks/:id', () => {
 
     chai.request(app).put(`/mimic/mocks/${mock.hash}`)
       .type('json')
-      .send({ method: 'get', path: '/new-tests', response: { test: 1 } })
+      .send({ httpMethod: 'get', endpoint: '/new-tests', response: { test: 1 } })
       .end(async () => {
 
         expect(testFilePath).to.not.be.a.path();
@@ -101,7 +112,7 @@ describe('PUT /mimic/mocks/:id', () => {
 
     chai.request(app).put(`/mimic/mocks/${mock.hash}`)
       .type('json')
-      .send({ method: 'get', path: '/new-tests', response: { test: 1 } })
+      .send({ httpMethod: 'get', endpoint: '/new-tests', response: { test: 1 } })
       .end(async (_, res) => {
 
         expect(res.status).to.be.equal(200);
@@ -120,7 +131,7 @@ describe('PUT /mimic/mocks/:id', () => {
 
     chai.request(app).put(`/mimic/mocks/${mock.hash}`)
       .type('json')
-      .send({ method: 'get', path: '/tests', response: { test: 1 } })
+      .send({ httpMethod: 'get', endpoint: '/tests', response: { test: 1 } })
       .end((_, res) => {
 
         expect(res.status).to.be.equal(200);

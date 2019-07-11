@@ -24,7 +24,7 @@ describe('POST /mimic/mocks', () => {
   it('fail with status 422 for missing method parameter', (done) => {
 
     chai.request(app).post('/mimic/mocks/').type('json')
-      .send({ path: '/test', response: { test: '1' } })
+      .send({ endpoint: '/test', response: { test: '1' } })
       .end((_, res) => {
 
         expect(res.status).to.be.equal(422);
@@ -35,7 +35,7 @@ describe('POST /mimic/mocks', () => {
   it('fail with status 422 for missing path parameter', (done) => {
 
     chai.request(app).post('/mimic/mocks/').type('json')
-      .send({ method: 'GET', response: { test: '1' } })
+      .send({ httpMethod: 'GET', response: { test: '1' } })
       .end((_, res) => {
 
         expect(res.status).to.be.equal(422);
@@ -46,7 +46,7 @@ describe('POST /mimic/mocks', () => {
   it('fail with status 422 for missing response parameter', (done) => {
 
     chai.request(app).post('/mimic/mocks/').type('json')
-      .send({ method: 'GET', path: '/test' })
+      .send({ httpMethod: 'GET', endpoint: '/test' })
       .end((_, res) => {
 
         expect(res.status).to.be.equal(422);
@@ -57,7 +57,18 @@ describe('POST /mimic/mocks', () => {
   it('fail with status 422 for invalid method value', (done) => {
 
     chai.request(app).post('/mimic/mocks/').type('json')
-      .send({ method: 'invalid', path: '/test', response: { test: '1' } })
+      .send({ httpMethod: 'invalid', endpoint: '/test', response: { test: '1' } })
+      .end((_, res) => {
+
+        expect(res.status).to.be.equal(422);
+        done();
+      });
+  });
+
+  it('fail with status 422 for invalid endpoint value', (done) => {
+
+    chai.request(app).post('/mimic/mocks/').type('json')
+      .send({ httpMethod: 'get', endpoint: 'test', response: { test: '1' } })
       .end((_, res) => {
 
         expect(res.status).to.be.equal(422);
@@ -68,7 +79,7 @@ describe('POST /mimic/mocks', () => {
   it('should return a mock model in success request', (done) => {
 
     chai.request(app).post('/mimic/mocks/').type('json')
-      .send({ method: 'get', path: '/test', response: { test: 1 } })
+      .send({ httpMethod: 'get', endpoint: '/test', response: { test: 1 } })
       .end((_, res) => {
 
         expect(res.status).to.be.equal(200);
@@ -88,7 +99,7 @@ describe('POST /mimic/mocks', () => {
     const response = { test: '1' };
 
     chai.request(app).post('/mimic/mocks/').type('json')
-      .send({ method: 'get', path: '/test', response })
+      .send({ httpMethod: 'get', endpoint: '/test', response })
       .end(() => {
 
         expect(`${testPath}/get.test.json`).to.be.a.file()
