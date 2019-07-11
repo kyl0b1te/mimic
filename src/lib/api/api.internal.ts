@@ -7,8 +7,8 @@ import { Mock } from '../mimic/storage';
 import Mimic from '../mimic/mimic';
 
 interface RequestMockParameters {
-  method: HttpMethod;
-  path: string;
+  httpMethod: HttpMethod;
+  endpoint: string;
   response: Record<string, any>;
 }
 
@@ -40,8 +40,8 @@ export default class ApiInternal {
 
   private async addMock(req: Request): Promise<Mock> {
 
-    const { method, path, response } = this.getMockParametersFromRequest(req);
-    return await this.mimic.addMock(method, path, response);
+    const { httpMethod, endpoint, response } = this.getMockParametersFromRequest(req);
+    return await this.mimic.addMock(httpMethod, endpoint, response);
   }
 
   private async getMockById(req: Request): Promise<Mock & { response: Record<string, any> }> {
@@ -68,19 +68,30 @@ export default class ApiInternal {
   private async updateMock(req: Request): Promise<Mock> {
 
     const { mock } = this.getRequestMock(req);
-    const { method, path, response } = this.getMockParametersFromRequest(req);
+    const { httpMethod, endpoint, response } = this.getMockParametersFromRequest(req);
 
-    return await this.mimic.updateMock(mock, method, path, response);
+    return await this.mimic.updateMock(mock, httpMethod, endpoint, response);
   }
 
   private getMockParametersFromRequest(req: Request): RequestMockParameters {
 
-    const { method, path, response } = req.body;
-    if (!method || !path || !response || !isHttpMethod(method) || path.charAt(0) !== '/') {
+    const { httpMethod, endpoint, response } = req.body;
+    if (!httpMethod || !endpoint || !response) {
 
       throw new ApiError(422, 'Some parameters are missing in request body');
     }
-    return { method, path, response };
+
+    if (!isHttpMethod(httpMethod)) {
+
+      throw new ApiError(422, `httpMethod parameter is invalid (get | post | put | delete)`);
+    }
+
+    if (endpoint.charAt(0) !== '/') {
+
+      throw new ApiError(422, `endpoint should start from '/'`);
+    }
+
+    return { httpMethod, endpoint, response };
   }
 
   private getRequestMock(req: Request): { hash: string; mock: Mock } {
