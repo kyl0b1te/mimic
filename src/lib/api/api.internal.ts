@@ -76,7 +76,7 @@ export default class ApiInternal {
   private getMockParametersFromRequest(req: Request): RequestMockParameters {
 
     const { method, path, response } = req.body;
-    if (!method || !path || !response || !isHttpMethod(method)) {
+    if (!method || !path || !response || !isHttpMethod(method) || path.charAt(0) !== '/') {
 
       throw new ApiError(422, 'Some parameters are missing in request body');
     }
