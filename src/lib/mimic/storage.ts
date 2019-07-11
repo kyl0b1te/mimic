@@ -31,7 +31,7 @@ export default class Storage {
 
       return fs.writeFile(filePath, JSON.stringify(content), (err: Error | null) => {
 
-        err != null ? reject(err) : resolve(this.getMock(filePath));
+        err != null ? reject(err) : resolve(this.getMock(path.basename(filePath)));
       });
     });
   }
@@ -42,7 +42,7 @@ export default class Storage {
 
       fs.unlink(filePath, (err: Error | null) => {
 
-        err != null ? reject(err) : resolve(this.getMock(filePath));
+        err != null ? reject(err) : resolve(this.getMock(path.basename(filePath)));
       });
     });
   }
