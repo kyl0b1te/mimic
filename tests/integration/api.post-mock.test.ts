@@ -73,6 +73,12 @@ describe('POST /mimic/mocks', () => {
 
         expect(res.status).to.be.equal(200);
         expect(res.body).to.have.all.keys('endpoint', 'httpMethod', 'mockFilePath', 'hash');
+        delete res.body.hash;
+        expect(res.body).to.deep.equal({
+          httpMethod: 'get',
+          endpoint: '/test',
+          mockFilePath: `${testPath}/get.test.json`
+        });
         done();
       });
   });

@@ -105,7 +105,12 @@ describe('PUT /mimic/mocks/:id', () => {
       .end(async (_, res) => {
 
         expect(res.status).to.be.equal(200);
-        expect(res.body).to.have.all.keys('endpoint', 'httpMethod', 'mockFilePath', 'hash');
+        expect(res.body).to.deep.equal({
+          endpoint: '/new-tests',
+          httpMethod: 'get',
+          mockFilePath: '/tmp/mimic-tests/get.new-tests.json',
+          hash: '198ad127fd3288ed4ea5414d66408cc78b9a69c3'
+        });
         await cleanUp();
         done();
       });
@@ -119,7 +124,7 @@ describe('PUT /mimic/mocks/:id', () => {
       .end((_, res) => {
 
         expect(res.status).to.be.equal(200);
-        expect(res.body).to.have.all.keys('endpoint', 'httpMethod', 'mockFilePath', 'hash');
+        expect(res.body).to.deep.equal(mock);
         done();
       });
   });
