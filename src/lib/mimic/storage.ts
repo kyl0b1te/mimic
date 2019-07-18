@@ -68,9 +68,9 @@ export default class Storage {
 
     return {
       endpoint,
-      httpMethod,
+      httpMethod: httpMethod as HttpMethod,
       mockFilePath,
-      hash: this.getHash(httpMethod, endpoint),
+      hash: this.getHash(httpMethod + '', endpoint),
       getMockResponse: (): Promise<Buffer> => {
 
         return this.getMockContentByFileName(fileName);
@@ -99,18 +99,31 @@ export default class Storage {
           return reject(err);
         }
 
-        resolve(files.filter((file: string) => file.endsWith('.json')));
+        const mockFiles: string[] = [];
+        for (const file of files) {
+
+          if (!file.endsWith('.json')) {
+            continue;
+          }
+          const { httpMethod, endpoint } = this.parseFileName(file);
+          if (httpMethod && endpoint) {
+
+            mockFiles.push(file);
+          }
+        }
+        resolve(mockFiles);
       });
     });
   }
 
-  private parseFileName(name: string): { httpMethod: HttpMethod; endpoint: string } {
+  private parseFileName(name: string): { httpMethod: HttpMethod | undefined; endpoint: string } {
 
     const parts = name.split('.');
     parts.pop();
 
+    const method = parts.shift();
     return {
-      httpMethod: parts.shift() as HttpMethod,
+      httpMethod: this.isHttpMethod(method + '') ? method as HttpMethod : undefined,
       endpoint: `/${parts.join('/')}`
     }
   }
@@ -118,5 +131,10 @@ export default class Storage {
   private getHash(httpMethod: string, endpoint: string): string {
 
     return crypto.createHash('sha1').update(httpMethod + endpoint).digest('hex');
+  }
+
+  private isHttpMethod(method: string): method is HttpMethod {
+
+    return ['get', 'post', 'put', 'delete'].indexOf(method) >= 0;
   }
 }
