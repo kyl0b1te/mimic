@@ -121,10 +121,12 @@ export default class Storage {
     const parts = name.split('.');
     parts.pop();
 
-    const method = parts.shift();
+    const urlParts = parts.filter((part) => part !== '');
+
+    const method = urlParts.shift();
     return {
       httpMethod: this.isHttpMethod(method + '') ? method as HttpMethod : undefined,
-      endpoint: `/${parts.join('/')}`
+      endpoint: `/${urlParts.join('/')}`
     }
   }
 
