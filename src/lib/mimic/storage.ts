@@ -58,7 +58,13 @@ export default class Storage {
 
   public getMockFilePath(httpMethod: string, endpoint: string): string {
 
-    return path.join(this.filePath, `${httpMethod.toLowerCase()}.${endpoint.substr(1).replace(/\//g, '.')}.json`);
+    if (endpoint.startsWith('/')) {
+      endpoint = endpoint.substr(1);
+    }
+    return path.join(
+      this.filePath,
+      `${httpMethod.toLowerCase()}.${endpoint.replace(/\//g, '.')}.json`
+    );
   }
 
   private getMock(fileName: string): Mock {
