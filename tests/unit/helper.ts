@@ -23,7 +23,7 @@ const delFile = (name: string): Promise<string> => {
 const addTmpFile = async (name: string, fn: () => void) => {
 
   await addFile(name, []);
-  fn();
+  await fn();
   await delFile(name);
 }
 
