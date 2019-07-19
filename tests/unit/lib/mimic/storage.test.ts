@@ -105,4 +105,66 @@ describe.only('Storage', () => {
     addFile(tests[0].filename, tests[0].data);
   });
 
+  it('should raise error if file is not exist', () => {
+
+    const promise = storage.deleteMock('missing.json');
+    promise.catch((err) => {
+
+      expect(err).not.be.undefined;
+      expect(err.code).equal('ENOENT');
+    });
+  });
+
+  it('should delete existing mock file', async () => {
+
+    addFile('get.to-delete.json', []);
+    await storage.deleteMock(`${testFilesPath}/get.to-delete.json`);
+
+    expect(testFilesPath).to.be.a.directory()
+      .and.not.include.files(['get.to-delete.json']);
+  });
+
+  it('should return valid mock file path', () => {
+
+    const methods = ['get', 'post', 'delete', 'put'];
+
+    methods.map((method: string) => {
+
+      expect(storage.getMockFilePath(method, 'test'))
+        .to.be.equal(`${testFilesPath}/${method}.test.json`);
+
+      expect(storage.getMockFilePath(method, '/test'))
+        .to.be.equal(`${testFilesPath}/${method}.test.json`);
+    })
+  });
+
+  it('should update existing mock file', async () => {
+
+    const filePath = `${testFilesPath}/get.update-mock.json`;
+    const newData = [{ changed: 'OK' }];
+
+    addTmpFile('get.update-mock.json', async () => {
+
+      await storage.updateMock(filePath, filePath, newData);
+      expect(filePath).to.be.a.file().with.content(JSON.stringify(newData));
+    });
+  });
+
+  it('should create new mock file and delete old one', async () => {
+
+    const oldFilePath = `${testFilesPath}/get.old.json`;
+    const newFilePath = `${testFilesPath}/get.new.json`;
+    const newData = [{ changed: 'OK' }];
+
+    await addFile('get.old.json', []);
+
+    await storage.updateMock(oldFilePath, newFilePath, newData);
+
+    expect(testFilesPath).to.be.a.directory()
+      .and.not.include.files(['get.old.json']);
+    expect(newFilePath).to.be.a.file().with.content(JSON.stringify(newData));
+
+    await delFile('get.new.json');
+  })
+
 });
