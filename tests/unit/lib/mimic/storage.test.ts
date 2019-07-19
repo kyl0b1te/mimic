@@ -16,7 +16,7 @@ const tests = [
 chai.use(chaiHttp);
 chai.use(chaiFs);
 
-describe.only('Storage', () => {
+describe('Storage', () => {
 
   const testFilesPath = getTestFilesPath();
 
