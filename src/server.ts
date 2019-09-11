@@ -1,4 +1,5 @@
 import express, { Express } from 'express';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 
 import Log from './lib/log';
@@ -22,6 +23,7 @@ export default class Server {
     const cache = new Cache();
     this.app.set('cache', cache);
     this.app.set('log', new Log(cache));
+    this.app.use(cors());
   }
 
   public async setRoutes(mocksPath: string): Promise<Server> {
