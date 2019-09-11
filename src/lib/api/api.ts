@@ -27,6 +27,15 @@ export default class Api {
   private log: Log;
   private cache: Cache;
 
+  private headers: {
+    'Content-Type': 'application/json';
+    'Access-Control-Allow-Origin': '*';
+    'Access-Control-Expose-Headers': '*';
+    'Access-Control-Allow-Methods': 'HEAD, GET, POST, OPTIONS, PUT, PATCH, DELETE';
+    'Access-Control-Allow-Headers': '*';
+    'Access-Control-Allow-Credentials': 'true';
+  };
+
   public constructor(private app: Express) {
 
     this.cache = this.app.get('cache');
@@ -80,6 +89,8 @@ export default class Api {
   private async sendResponse(route: ApiRoute, req: Request, res: Response): Promise<void> {
 
     const data = await this.getResponseData(route, req, res);
+
+    res.set(this.headers);
     if (data instanceof Buffer) {
 
       res.send(data.toString());
