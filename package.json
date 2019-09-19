@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "nyc mocha -r ts-node/register 'tests/**/*.test.ts'",
+    "test:clean": "mocha -r ts-node/register 'tests/**/*.test.ts'",
     "build": "rm -rf dist/* && tsc",
     "lint": "eslint src/ --ext .ts"
   },
